@@ -1,0 +1,81 @@
+// Employee.java
+@Entity
+public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    private String role;
+    // other fields, constructors, getters, and setters
+}
+
+// EmployeeRepository.java
+@Repository
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+}
+
+// EmployeeService.java
+public interface EmployeeService {
+    List<Employee> getAllEmployees();
+    void saveEmployee(Employee employee);
+    Employee getEmployeeById(Long id);
+    void deleteEmployee(Long id);
+}
+
+// EmployeeServiceImpl.java
+@Service
+public class EmployeeServiceImpl implements EmployeeService {
+    @Autowired
+    private EmployeeRepository employeeRepository;
+    
+    // Implement methods
+}
+
+// EmployeeController.java
+@Controller
+public class EmployeeController {
+    @Autowired
+    private EmployeeService employeeService;
+
+    @GetMapping("/")
+    public String viewHomePage(Model model) {
+        model.addAttribute("listEmployees", employeeService.getAllEmployees());
+        return "index";
+    }
+    
+    // Other mappings for create, update, delete operations
+}
+
+// application.properties (configure database connection, Thymeleaf, etc.)
+
+// index.html (Thymeleaf template)
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Employee Management System</title>
+</head>
+<body>
+    <h1>Employee Management System</h1>
+    
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+        <tr th:each="employee : ${listEmployees}">
+            <td th:text="${employee.id}"></td>
+            <td th:text="${employee.name}"></td>
+            <td th:text="${employee.role}"></td>
+            <td>
+                <a th:href="@{/edit/{id}(id=${employee.id})}">Edit</a> |
+                <a th:href="@{/delete/{id}(id=${employee.id})}">Delete</a>
+            </td>
+        </tr>
+    </table>
+    
+    <a th:href="@{/new}">Add New Employee</a>
+</body>
+</html>
